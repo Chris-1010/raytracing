@@ -10,21 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Driver  {
-    // Scene
     final static int CHUNKSIZE = 100;
     List<Object> objectList;
     List<Object> lightList;
     Surface currentSurface;
 	Canvas canvas;
 	GraphicsContext gc;
-    Color background;
-    int width, height;
 
-    // Camera
     Vector3D eye, lookat, up;
     Vector3D Du, Dv, Vp;
     float fov;
 
+    Color background;
+
+    int width, height;
 
     public Driver(int width, int height, String dataFile) {
         this.width = width;
@@ -88,58 +87,67 @@ class Driver  {
 	    StreamTokenizer st = new StreamTokenizer(is);
     	st.commentChar('#');
         scan: while (true) {
-            if (st.nextToken() == StreamTokenizer.TT_WORD) {
-                switch (st.sval) {
-                    case "sphere" -> {
-                        Vector3D v = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
-                        float r = (float) getNumber(st);
-                        objectList.add(new Sphere(currentSurface, v, r));
+	        switch (st.nextToken()) {
+	          default:
+		        break scan;
+	          case StreamTokenizer.TT_WORD:
+	            if (st.sval.equals("sphere")) {
+                    Vector3D v = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
+		            float r = (float) getNumber(st);
+		            objectList.add(new Sphere(currentSurface, v, r));
+			    } else
+			    if (st.sval.equals("eye")) {
+		            eye = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
+			    } else
+			    if (st.sval.equals("lookat")) {
+		            lookat = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
+			    } else
+			    if (st.sval.equals("up")) {
+		            up = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
+			    } else
+			    if (st.sval.equals("fov")) {
+                    fov = (float) getNumber(st);
+			    } else
+			    if (st.sval.equals("background")) {
+                    background = Color.rgb((int) getNumber(st), (int) getNumber(st), (int) getNumber(st));
+			    } else
+			    if (st.sval.equals("light")) {
+			        float r = (float) getNumber(st);
+			        float g = (float) getNumber(st);
+			        float b = (float) getNumber(st);
+		            if (st.nextToken() != StreamTokenizer.TT_WORD) {
+                        throw new IOException(st.toString());
                     }
-                    case "eye" ->
-                            eye = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
-                    case "lookat" ->
-                            lookat = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
-                    case "up" -> up = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
-                    case "fov" -> fov = (float) getNumber(st);
-                    case "background" ->
-                            background = Color.rgb((int) getNumber(st), (int) getNumber(st), (int) getNumber(st));
-                    case "light" -> {
-                        float r = (float) getNumber(st);
-                        float g = (float) getNumber(st);
-                        float b = (float) getNumber(st);
-                        if (st.nextToken() != StreamTokenizer.TT_WORD) {
-                            throw new IOException(st.toString());
-                        }
-                        if (st.sval.equals("ambient")) {
-                            lightList.add(new Light(Light.AMBIENT, null, r, g, b));
-                        } else if (st.sval.equals("directional")) {
-                            Vector3D v = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
-                            lightList.add(new Light(Light.DIRECTIONAL, v, r, g, b));
-                        } else if (st.sval.equals("point")) {
-                            Vector3D v = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
-                            lightList.add(new Light(Light.POINT, v, r, g, b));
-                        } else {
-                            System.err.println("ERROR: in line " + st.lineno() + " at " + st.sval);
-                            throw new IOException(st.toString());
-                        }
-                    }
-                    case "surface" -> {
-                        float r = (float) getNumber(st);
-                        float g = (float) getNumber(st);
-                        float b = (float) getNumber(st);
-                        float ka = (float) getNumber(st);
-                        float kd = (float) getNumber(st);
-                        float ks = (float) getNumber(st);
-                        float ns = (float) getNumber(st);
-                        float kr = (float) getNumber(st);
-                        float kt = (float) getNumber(st);
-                        float index = (float) getNumber(st);
-                        currentSurface = new Surface(r, g, b, ka, kd, ks, ns, kr, kt, index);
-                    }
-                }
-            } else {
-                break scan;
-            }
+		            if (st.sval.equals("ambient")) {
+		                lightList.add(new Light(Light.AMBIENT, null, r, g, b));
+		            } else
+		            if (st.sval.equals("directional")) {
+		                Vector3D v = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
+		                lightList.add(new Light(Light.DIRECTIONAL, v, r, g, b));
+		            } else
+		            if (st.sval.equals("point")) {
+		                Vector3D v = new Vector3D((float) getNumber(st), (float) getNumber(st), (float) getNumber(st));
+		                lightList.add(new Light(Light.POINT, v, r, g, b));
+		            } else {
+		                System.err.println("ERROR: in line "+st.lineno()+" at "+st.sval);
+		                throw new IOException(st.toString());
+		            }
+			    } else
+			    if (st.sval.equals("surface")) {
+			        float r = (float) getNumber(st);
+			        float g = (float) getNumber(st);
+			        float b = (float) getNumber(st);
+		            float ka = (float) getNumber(st);
+		            float kd = (float) getNumber(st);
+		            float ks = (float) getNumber(st);
+		            float ns = (float) getNumber(st);
+		            float kr = (float) getNumber(st);
+		            float kt = (float) getNumber(st);
+		            float index = (float) getNumber(st);
+		            currentSurface = new Surface(r, g, b, ka, kd, ks, ns, kr, kt, index);
+			    }
+			    break;
+	        }
 	    }
         is.close();
 	    if (st.ttype != StreamTokenizer.TT_EOF)
