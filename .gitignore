@@ -1,6 +1,28 @@
-# Default ignored files
-/shelf/
-/.idea/workspace.xml
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
 
-# Ignore target directory
+# Maven
 target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Compiled files
+*.class
+*.jar
+
+# Generated images
+*.png
+
+# Logs
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db

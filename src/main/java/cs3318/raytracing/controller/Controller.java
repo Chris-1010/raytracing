@@ -62,43 +62,39 @@ public class Controller {
             }
         }
         time = System.currentTimeMillis() - time;
-        System.err.println("Rendered in "+(time/60000)+":"+((time%60000)*0.001));
+        System.err.println("Rendered in "+(time/60000)+":"+((time%60000) * 0.001));
     }
 
     public void exportImage(String filename) {
         try {
-            File outputfile = new File(filename);
-            ImageIO.write(image, "PNG", outputfile);
+            File outputFile = getFile(filename);
+
+            ImageIO.write(image, "PNG", outputFile);
             System.out.println("Image exported as " + filename);
+
+        } catch (SecurityException e) {
+            System.err.println("Security error: " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error saving image: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
         }
     }
 
-    public void setTestScene() {
-        Surface testSurface = new Surface(0.2f, 0.8f, 0.2f, 0.5f, 0.9f, 0.4f, 10.0f, 0, 0, 1);
-        Point3D center = new Point3D(-0.4f, 0.375f, -0.4f);
-        addSphere(center, 0.375f, testSurface);
+    private static File getFile(String filename) throws IOException {
+        File outputFile = new File(filename);
 
-        testSurface = new Surface(0.7f,  0.3f,  0.2f,  0.5f,  0.9f,  0.4f,  6.0f, 0, 0, 1);
-        center = new Point3D(-0.6f, 1.05f, -0.6f);
-        addSphere(center, 0.3f, testSurface);
+        // Check if directory exists/can be created
+        File parentDir = outputFile.getParentFile();
+        if (parentDir != null && !parentDir.exists() && !parentDir.mkdirs()) {
+            throw new IOException("Failed to create directory: " + parentDir);
+        }
 
-        testSurface = new Surface(0.2f,  0.3f,  0.8f,  0.5f,  0.9f,  0.4f,  10.0f, 0, 0, 1);
-        center = new Point3D(-0.8f,  1.575f,  -0.8f);
-        addSphere(center, 0.125f, testSurface);
-
-        addLight(1.0f,  1.0f, 0.981f);
-        addLight(0.9f,  0.9f, 0.9f);
-        addLight(0.745f, 0.859f, 0.224f);
-        Vector3D direction = new Vector3D(-1, -1, -1);
-        addLight(0.6f, 0.6f, 0.6f, direction);
-
-        Vector3D testLookat = new Vector3D(-0.5f, 0f, -0.5f);
-        Point3D testEye = new Point3D(1.5f, 10.5f, -1.5f);
-
-        setCamera(testLookat, testEye);
-
+        // Check write permissions
+        if (outputFile.exists() && !outputFile.canWrite()) {
+            throw new IOException("No write permission: " + outputFile);
+        }
+        return outputFile;
     }
 
     public void addSphere(Point3D center, float radius, Surface surface) {

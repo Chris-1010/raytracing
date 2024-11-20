@@ -13,7 +13,7 @@ public class Sphere implements Renderable {
         surface = s;
         center = c;
         radius = r;
-        radSqr = r*r;
+        radSqr = r * r;
     }
 
     public Float intersect(Ray ray, float intersectDistance) {
@@ -28,7 +28,7 @@ public class Sphere implements Renderable {
             return null;
 
         // Test if the ray actually intersects the sphere
-        float t = radSqr + v*v - dx*dx - dy*dy - dz*dz;
+        float t = radSqr + v * v - dx * dx - dy * dy - dz * dz;
         if (t < 0)
             return null;
 
@@ -42,16 +42,17 @@ public class Sphere implements Renderable {
     }
 
     public Vector3D surfaceNormal(Point3D intersectionPoint) {
-        Vector3D n = new Vector3D(intersectionPoint.x - center.x, intersectionPoint.y - center.y, intersectionPoint.z - center.z);
+        Vector3D n = new Vector3D(intersectionPoint.x - center.x, intersectionPoint.y - center.y,
+                intersectionPoint.z - center.z);
         n.normalize();
         return n;
     }
 
     public String toString() {
-        return ("sphere "+center+" "+radius);
+        return ("sphere " + center + " " + radius);
     }
 
-    public Surface getSurface(){
+    public Surface getSurface() {
         return surface;
     }
 }

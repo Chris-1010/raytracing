@@ -6,7 +6,7 @@ import java.util.List;
 import cs3318.raytracing.utils.*;
 
 public class Scene {
-    final static int CHUNKSIZE = 100;
+    final static int CHUNKSIZE = 100;  // Max array size
     List<Renderable> objectList;
     List<Light> lightList;
 
